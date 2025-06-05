@@ -6,19 +6,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  xcode_16:
-    runs-on: macos-14
+  xcode_16_4:
+    runs-on: macos-15
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: 🔍 Xcode Select
-        run: |
-          XCODE_PATH=`mdfind "kMDItemCFBundleIdentifier == 'com.apple.dt.Xcode' && kMDItemVersion = '16.*'" -onlyin /Applications | head -1`
-          echo "DEVELOPER_DIR=$XCODE_PATH/Contents/Developer" >> $GITHUB_ENV
       - name: Version
         run: swift --version
       - name: Build
-        run: swift build --build-tests
+        run: swift build --build-tests --enable-experimental-prebuilts
       - name: Test
         run: swift test --skip-build
 
@@ -76,15 +74,15 @@ jobs:
       - name: Test
         run: swift test --skip-build
 
-  linux_swift_6_0:
+  linux_swift_6_1:
     runs-on: ubuntu-latest
-    container: swiftlang/swift:nightly-6.0-jammy
+    container: swift:6.1.2
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Version
         run: swift --version
       - name: Build
-        run: swift build --build-tests
+        run: swift build --build-tests --enable-experimental-prebuilts
       - name: Test
         run: swift test --skip-build
