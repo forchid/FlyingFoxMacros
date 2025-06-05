@@ -15,9 +15,8 @@ let package = Package(
         ),
     ],
     dependencies: [
-        // Depend on the Swift 5.10 release of SwiftSyntax
-        .package(url: "https://github.com/swhitty/FlyingFox.git", from: "0.16.0"),
-        .package(url: "https://github.com/swiftlang/swift-syntax", "509.0.0"..<"601.0.0-prerelease")
+        .package(url: "https://github.com/swhitty/FlyingFox.git", from: "0.22.0"),
+        .package(url: "https://github.com/swiftlang/swift-syntax", "510.0.0"..<"602.0.0")
     ],
     targets: [
         .target(
