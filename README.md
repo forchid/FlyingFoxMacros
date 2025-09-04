@@ -1,6 +1,6 @@
 [![Build](https://github.com/swhitty/FlyingFoxMacros/actions/workflows/build.yml/badge.svg)](https://github.com/swhitty/FlyingFoxMacros/actions/workflows/build.yml)
 [![Platforms](https://img.shields.io/badge/platforms-iOS%20|%20macOS%20|%20tvOS%20|%20watchOS%20|%20Linux%20|%20Windows-lightgray.svg)](https://github.com/swhitty/FlyingFoxMacros/blob/main/Package.swift)
-[![Swift 6.0](https://img.shields.io/badge/swift-5.9%20–%206.0-red.svg?style=flat)](https://developer.apple.com/swift)
+[![Swift 6.0](https://img.shields.io/badge/swift-6.1%20–%206.2-red.svg?style=flat)](https://developer.apple.com/swift)
 [![Twitter](https://img.shields.io/badge/twitter-@simonwhitty-blue.svg)](http://twitter.com/simonwhitty)
 
 # FlyingFoxMacros
