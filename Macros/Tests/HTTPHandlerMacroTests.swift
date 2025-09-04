@@ -40,37 +40,26 @@ struct HTTPHandlerMacroTests {
     func handler() async throws {
         let handler = MacroHandler()
 
-        await AsyncAssertEqual(
-            try await handler.handleRequest(.make(path: "/ok")).statusCode,
-            .ok
+        #expect(
+            try await handler.handleRequest(.make(path: "/ok")).statusCode == .ok
         )
-        await AsyncAssertEqual(
-            try await handler.handleRequest(.make(path: "/accepted")).statusCode,
-            .accepted
+        #expect(
+            try await handler.handleRequest(.make(path: "/accepted")).statusCode == .accepted
         )
-        await AsyncAssertEqual(
-            try await handler.handleRequest(.make(path: "/teapot")).statusCode,
-            .teapot
+        #expect(
+            try await handler.handleRequest(.make(path: "/teapot")).statusCode == .teapot
         )
-
-        await AsyncAssertEqual(
-            try await handler.handleRequest(.make(path: "/fish")).jsonDictionaryBody,
-            ["name": "Pickles"]
+        #expect(
+            try await handler.handleRequest(.make(path: "/fish")).jsonDictionaryBody == ["name": "Pickles"]
         )
-
-        await AsyncAssertEqual(
-            try await handler.handleRequest(.make(path: "/chips")).jsonDictionaryBody,
-            ["name": "🍟"]
+        #expect(
+            try await handler.handleRequest(.make(path: "/chips")).jsonDictionaryBody == ["name": "🍟"]
         )
-
-        await AsyncAssertEqual(
-            try await handler.handleRequest(.make(path: "/shrimp")).jsonDictionaryBody,
-            ["name": "🦐"]
+        #expect(
+            try await handler.handleRequest(.make(path: "/shrimp")).jsonDictionaryBody == ["name": "🦐"]
         )
-
-        await AsyncAssertEqual(
-            try await handler.handleRequest(.make(path: "/all")).jsonArrayBody,
-            [
+        #expect(
+            try await handler.handleRequest(.make(path: "/all")).jsonArrayBody == [
                 ["name": "Tyger Tyger"],
                 ["name": "Burning Bright"]
             ]
@@ -125,6 +114,16 @@ private struct MacroHandler {
 }
 
 private extension HTTPResponse {
+
+    var bodyText: String? {
+        get async {
+            guard let data = try? await bodyData,
+                  let text = String(data: data, encoding: .utf8) else {
+                return nil
+            }
+            return text
+        }
+    }
 
     var jsonDictionaryBody: NSDictionary? {
         get async {
