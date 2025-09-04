@@ -90,7 +90,7 @@ extension FunctionDecl {
             parameters: [],
             effects: [],
             attributes: [],
-            returnType: .init(syntax.signature.returnClause?.type.as(IdentifierTypeSyntax.self)?.name.text)
+            returnType: .init(syntax.signature.returnClause?.type.trimmedDescription)
         )
 
         decl.attributes = syntax.attributes
@@ -115,7 +115,7 @@ extension FunctionDecl {
             decl.effects.insert(.async)
         }
 
-        if syntax.signature.effectSpecifiers?.throwsSpecifier != nil {
+        if syntax.signature.effectSpecifiers?.throwsClause?.throwsSpecifier != nil {
             decl.effects.insert(.throws)
         }
 
