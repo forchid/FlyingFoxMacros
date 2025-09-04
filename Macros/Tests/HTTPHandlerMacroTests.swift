@@ -29,13 +29,15 @@
 //  SOFTWARE.
 //
 
+import Foundation
 import FlyingFox
 import FlyingFoxMacros
-import XCTest
+import Testing
 
-final class HTTPHandlerMacroTests: XCTestCase {
+struct HTTPHandlerMacroTests {
 
-    func testHandler() async throws {
+    @Test
+    func handler() async throws {
         let handler = MacroHandler()
 
         await AsyncAssertEqual(
@@ -54,6 +56,24 @@ final class HTTPHandlerMacroTests: XCTestCase {
         await AsyncAssertEqual(
             try await handler.handleRequest(.make(path: "/fish")).jsonDictionaryBody,
             ["name": "Pickles"]
+        )
+
+        await AsyncAssertEqual(
+            try await handler.handleRequest(.make(path: "/chips")).jsonDictionaryBody,
+            ["name": "🍟"]
+        )
+
+        await AsyncAssertEqual(
+            try await handler.handleRequest(.make(path: "/shrimp")).jsonDictionaryBody,
+            ["name": "🦐"]
+        )
+
+        await AsyncAssertEqual(
+            try await handler.handleRequest(.make(path: "/all")).jsonArrayBody,
+            [
+                ["name": "Tyger Tyger"],
+                ["name": "Burning Bright"]
+            ]
         )
     }
 }
@@ -79,9 +99,29 @@ private struct MacroHandler {
         Fish(name: "Pickles")
     }
 
+    @JSONRoute("/chips")
+    func getFoo() -> MacroHandler.Chips {
+        MacroHandler.Chips(name: "🍟")
+    }
+
+    @JSONRoute("/shrimp")
+    func getShrimp() -> some Encodable {
+        MacroHandler.Chips(name: "🦐")
+    }
+
+    @JSONRoute("/all")
+    func getAll() -> [Fish] {
+        [
+            Fish(name: "Tyger Tyger"),
+            Fish(name: "Burning Bright")
+        ]
+    }
+
     struct Fish: Encodable {
         var name: String
     }
+
+    typealias Chips = Fish
 }
 
 private extension HTTPResponse {
@@ -93,6 +133,16 @@ private extension HTTPResponse {
                 return nil
             }
             return object as? NSDictionary
+        }
+    }
+
+    var jsonArrayBody: NSArray? {
+        get async {
+            guard let data = try? await bodyData,
+                  let object = try? JSONSerialization.jsonObject(with: data, options: []) else {
+                return nil
+            }
+            return object as? NSArray
         }
     }
 }
