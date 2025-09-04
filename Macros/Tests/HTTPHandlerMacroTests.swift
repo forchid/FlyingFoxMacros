@@ -47,6 +47,9 @@ struct HTTPHandlerMacroTests {
             try await handler.handleRequest(.make(path: "/accepted")).statusCode == .accepted
         )
         #expect(
+            try await handler.handleRequest(.make(path: "/account/fish")).bodyText == "fish"
+        )
+        #expect(
             try await handler.handleRequest(.make(path: "/teapot")).statusCode == .teapot
         )
         #expect(
@@ -78,6 +81,12 @@ private struct MacroHandler {
     @HTTPRoute("/accepted")
     func willAppear(_ val: HTTPRequest) async -> HTTPResponse {
         HTTPResponse(statusCode: .accepted)
+    }
+
+    @HTTPRoute("/account/:id")
+    func accountID(_ req: HTTPRequest) async -> HTTPResponse {
+        let id = req.routeParameters["id"] ?? ""
+        return HTTPResponse(statusCode: .ok, body: id.data(using: .utf8)!)
     }
 
     @HTTPRoute("/teapot", statusCode: .teapot)

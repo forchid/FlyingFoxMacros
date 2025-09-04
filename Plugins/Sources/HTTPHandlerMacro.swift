@@ -43,7 +43,7 @@ public enum HTTPHandlerMacro: MemberMacro {
     ) throws -> [DeclSyntax] {
         let memberList = declaration.memberBlock.members
 
-        let routes = memberList.compactMap { member -> RouteDecl? in
+        var routes = memberList.compactMap { member -> RouteDecl? in
             guard let funcDecl = FunctionDecl.make(from: member),
                   let routeAtt = funcDecl.attribute(name: "HTTPRoute") ?? funcDecl.attribute(name: "JSONRoute") else {
                 return nil
@@ -65,6 +65,10 @@ public enum HTTPHandlerMacro: MemberMacro {
 
         if routes.isEmpty {
             context.diagnoseWarning(for: node, "No HTTPRoute found")
+        }
+
+        for i in routes.indices {
+            routes[i].idx = i
         }
 
         let routeDecl: DeclSyntax = """
@@ -103,6 +107,7 @@ private extension HTTPHandlerMacro {
         var isJSON: Bool
         var encoder: String
         var decoder: String
+        var idx: Int = 0
 
         var routeSyntax: String {
             if isJSON {
@@ -112,16 +117,29 @@ private extension HTTPHandlerMacro {
             }
         }
 
+        var responseVar: String {
+            "response\(idx)"
+        }
+
         var httpRouteSyntax: String {
             if funcDecl.returnType.isVoid {
                 """
-                if await HTTPRoute("\(route)") ~= request { \(funcCallSyntax)
-                return HTTPResponse(statusCode: \(statusCode), headers: \(headers))
+                let \(responseVar) = try await RoutedHTTPHandler.handleMatchedRequest(request, to: HTTPRoute("\(route)")) { _ in
+                    \(funcCallSyntax)
+                    return HTTPResponse(statusCode: \(statusCode), headers: \(headers))
+                }
+                if let \(responseVar) {
+                    return \(responseVar)
                 }
                 """
             } else {
                 """
-                if await HTTPRoute("\(route)") ~= request { return \(funcCallSyntax) }
+                let \(responseVar) = try await RoutedHTTPHandler.handleMatchedRequest(request, to: HTTPRoute("\(route)")) { _ in
+                    return \(funcCallSyntax)
+                }
+                if let \(responseVar) {
+                    return \(responseVar)
+                }
                 """
             }
         }
