@@ -15,7 +15,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/swhitty/FlyingFox.git", branch: "main"),
+        .package(url: "https://github.com/forchid/FlyingFox.git", branch: "main"),
         .package(url: "https://github.com/swiftlang/swift-syntax", "510.0.0"..<"602.0.0")
     ],
     targets: [
